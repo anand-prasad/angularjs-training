@@ -1,0 +1,166 @@
+<!doctype html>
+<html ng-app="expManager">
+<head>
+<title>Expense Manager</title>
+</head>
+
+<body>
+        <div ng-controller="expenseManagerCtrl">
+		<div class="container">
+        <div class="row margin-t-10px">
+		 <label class="label label-success">Total Income:{{totalIncome()}}</label>
+		 <label class="label label-danger">Total Expense:{{totalExpense()}}</label>
+		 <label class="label label-primary">Total Balance:{{totalIncome()-totalExpense()}}</label>
+		 </div>
+		 
+		 <div class="row margin-t-10px">
+		 <button type="submit" class="btn btn-default" ng-click="ShowIncome()">Show Income</button>
+		 <button type="submit" class="btn btn-default" ng-click="ShowExpense()">Show Expense</button>
+         </div>
+
+		<div class="row" ng-show= "IsIncomeVisible">
+        <table class="table table-striped">
+		<thead>
+		 <th>Id</th>
+		 <th>Income Category</th>
+		 <th>Amount</th>
+		 <th>Date/Time Of transaction</th>
+		 <th>Note</th>
+
+		</thead>
+		<tbody>
+		<tr ng-repeat="data in incomeArr">
+		<td>{{data.incomeCategory.id}}</td>
+        <td>{{data.incomeCategory.name}}</td>
+        <td>{{data.incomeAmount|number:2}}</td>
+        <td>{{data.date| date:'medium'}}</td> 
+		<td>{{data.note}}</td>
+        <td> <a href="" ng-click="editInc($index)">edit</a> | <a href="" ng-click="deleteInc($index)">delete</a>
+		
+		</tr>
+		</tbody>
+		</table>
+         </div>
+		 
+		 <div class="row" ng-show="IsExpenseVisible">
+		 <table class="table table-striped">
+		 <thead>
+		 <tr>
+		 <th>Id</th>
+		 <th>Expense Category</th>
+		 <th>Amount</th>
+		 <th>Mode</th>
+		 <th>Date/Time Of transaction</th>
+		 <th>Note</th>
+		 </tr>
+		</thead>
+		<tbody>
+		<tr ng-repeat="data in expenseArr">
+		<td>{{data.expenseCategory.id}}</td>
+        <td>{{data.expenseCategory.name}}</td>
+        <td>{{data.expenseAmount|number:2}}</td> 
+        <td>{{data.mode}}</td> 
+		<td>{{data.date| date:'medium'}}</td> 
+		<td>{{data.note}}</td>
+		<td> <a href="" ng-click="editExp($index)">edit</a> | <a href="" ng-click="deleteExp($index)">delete</a>
+	
+		</tr>
+		</tbody>
+		</table>
+
+	   </div>
+	     
+		 <div class="row">
+		 <form name="userIncForm" novalidate >
+		 <div class="col-md-3" ng-show="IsIncomeVisible">
+        <div class="form-group">
+		 <label>Income Category<span class="icon">*</span></label>
+         <select type="text" class="form-control" name="incomeCategory" ng-options="option as option.name for option in income track by option.id"
+		 ng-model="incomeCal.incomeCategory" required></select>
+         <p class="error" ng-show="userIncForm.incomeCategory.$error.required && submitted">Select an option from category</p>
+          </div>
+		  <div class="form-group">
+         <label>Income Amount<span class="icon">*</span></label>
+         <input type="text" class="form-control" name="incomeAmount" ng-model="incomeCal.incomeAmount" 
+		 ng-pattern="/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/" ng-maxlength="15" required>
+         <p class="error" ng-show="userIncForm.incomeAmount.$error.required && submitted">Amount field is empty</p>
+		 <p class="error" ng-show="userIncForm.incomeAmount.$error.pattern">Enter positive numeric value </p>
+		 <p class="error" ng-show="userIncForm.incomeAmount.$error.maxlength">Only 15 characters supported</p>
+
+		 </div>
+		 <div class="form-group">
+		   <label for="text">Notes</label>
+           <textarea id="text" cols="35" rows="3" ng-maxlength="20" name="note" ng-model="incomeCal.note"></textarea>
+		     <p class="error" ng-show="userIncForm.note.$error.maxlength">Max character limit is 20</p>
+		   </div>
+		 <div class="form-group">
+         <label>Date of Transaction<span class="icon">*</span></label>
+         <input type="date" class="form-control" name="date" ng-model="incomeCal.date" required>
+         <p class="error" ng-show="userIncForm.date.$error.required && submitted">Please select date</p>
+		 </div>
+
+		   <button type="submit" ng-click="AddIncome()" class="btn btn-default" ng-hide="isAddVisible">Add</button>
+		   <button type="submit" ng-click="updateInc()" class="btn btn-default" ng-show="isUpdateVisible">Update</button>
+
+          </div>
+		  </form>
+		 <form name="userExpForm" novalidate >
+		 <div class="col-md-3" ng-show="IsExpenseVisible">
+        <div class="form-group">
+		 <label>Expense Category<span class="icon">*</span></label>
+         <select type="text" class="form-control" name="expenseCategory" ng-options="option as option.name for option in expense track by option.id"
+		 ng-model="expenseCal.expenseCategory" required></select>
+         <p class="error" ng-show="userExpForm.expenseCategory.$error.required && submitted">Select an option from category</p>
+          </div>
+		  <div class="form-group">
+         <label>Expense Amount<span class="icon">*</span></label>
+         <input type="text" class="form-control" name="expenseAmount" ng-model="expenseCal.expenseAmount" 
+		  ng-pattern="/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/" ng-maxlength="15" required>
+         <p class="error" ng-show="userExpForm.expenseAmount.$error.required && submitted">Amount field is empty</p>
+		 <p class="error" ng-show="userExpForm.expenseAmount.$error.pattern">Enter positive numeric value</p>
+		 <p class="error" ng-show="userExpForm.expenseAmount.$error.maxlength">Only 15 characters supported</p>
+
+		 
+		 </div>
+		  <div class="form-group">
+		   <label>Transaction Mode<span class="icon">*</span></label>
+		  <div class="">
+          <label><input type="radio" ng-model="expenseCal.mode" name="radio" value="cash" ng-required="!expenseCal.mode">Cash</label>
+		  <label><input type="radio" ng-model="expenseCal.mode" name="radio" value="cheque" ng-required="!expenseCal.mode">Cheque</label>
+		  <label><input type="radio" ng-model="expenseCal.mode" name="radio" value="card" ng-required="!expenseCal.mode">Card</label>
+		  <p class="error" ng-show="userExpForm.radio.$error.required && submitted">Select one among the available options </p>
+
+          </div>
+		  </div>
+		   <div class="form-group">
+		   <label for="text">Notes</label>
+           <textarea id="text" cols="35" rows="3" ng-maxlength="20" name="note" ng-model="expenseCal.note"></textarea>
+		     <p class="error" ng-show="userExpForm.note.$error.maxlength">Max character limit is 20</p>
+		   </div>
+		  
+		   <div class="form-group">
+         <label>Date of Transaction<span class="icon">*</span></label>
+         <input type="date" class="form-control" name="date" ng-model="expenseCal.date" required>
+         <p class="error" ng-show="userExpForm.date.$error.required && submitted">Please select date</p>
+		 </div>
+		 <button type="submit" class="btn btn-default" ng-click="AddExpense()" ng-hide="isAddVisible">Add</button>
+		  <button type="submit" ng-click="updateExp()" class="btn btn-default" ng-show="isUpdateVisible">Update</button>
+
+
+          </div>
+		  </div>
+         </form>
+		 </div>
+		 
+		 </div>
+		</div> 
+
+</body>
+<script src="../js/angular.min.js"></script>
+<script src="../js/controller.js"></script>
+<script src="../js/factory.js"></script>
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<link rel="stylesheet" href="../css/style.css">
+
+</body>
+</html>
