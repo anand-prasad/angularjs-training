@@ -1,0 +1,14 @@
+.margin-t-10px
+{
+	margin-top:10px;
+}
+.icon{
+	color:#ff0000;
+}
+.error
+{
+  	color:#ff0000;
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}

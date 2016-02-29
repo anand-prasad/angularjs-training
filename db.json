@@ -1,0 +1,25 @@
+{
+  "income": [
+    {
+      "incomeCategory": {
+        "id": "3",
+        "name": "OtherSources"
+      },
+      "incomeAmount": 2323020,
+      "date": "2016-02-24T18:30:00.000Z",
+      "id": 1
+    }
+  ],
+  "expense": [
+    {
+      "expenseCategory": {
+        "id": "2",
+        "name": "Travel"
+      },
+      "expenseAmount": 310,
+      "mode": "card",
+      "date": "2016-02-10T18:30:00.000Z",
+      "id": 1
+    }
+  ]
+}
